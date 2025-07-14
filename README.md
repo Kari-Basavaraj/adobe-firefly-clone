@@ -28,7 +28,7 @@ A modern, Adobe Firefly-inspired web application for generating images and video
 ### Prerequisites
 
 - Node.js 18+ and npm/yarn
-- A fal.ai API key (get one at [fal.ai](https://fal.ai/dashboard))
+- A Replicate API token (get one at [replicate.com](https://replicate.com))
 
 ### Installation
 
@@ -46,8 +46,8 @@ A modern, Adobe Firefly-inspired web application for generating images and video
 3. **Set up environment variables**
    Create a `.env.local` file in the root directory:
    ```env
-   # FAL.AI API Configuration
-   FAL_KEY=your_fal_api_key_here
+   # Replicate API Configuration
+   REPLICATE_API_TOKEN=your_replicate_api_token_here
    ```
 
 4. **Start the development server**
@@ -65,20 +65,18 @@ A modern, Adobe Firefly-inspired web application for generating images and video
 Create a `.env.local` file with the following variables:
 
 ```env
-# Required: Your fal.ai API key
-FAL_KEY=your_fal_api_key_here
-
-# Optional: For client-side generation (less secure)
-# NEXT_PUBLIC_FAL_KEY=your_fal_api_key_here
+# Required: Your Replicate API token
+REPLICATE_API_TOKEN=your_replicate_api_token_here
 ```
 
-### Getting a fal.ai API Key
+### Getting a Replicate API Token
 
-1. Visit [fal.ai](https://fal.ai/dashboard)
+1. Visit [replicate.com](https://replicate.com)
 2. Sign up or log in to your account
-3. Go to your dashboard
-4. Create a new API key
-5. Copy the key and add it to your `.env.local` file
+3. Go to your account settings
+4. Find the API tokens section
+5. Create a new API token
+6. Copy the token and add it to your `.env.local` file
 
 ## Usage
 
