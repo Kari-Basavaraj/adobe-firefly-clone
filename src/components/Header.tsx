@@ -1,5 +1,6 @@
 "use client";
 
+import React from 'react';
 import { useState } from "react";
 import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
@@ -7,15 +8,14 @@ import {
   Sun, 
   Moon, 
   Sparkles, 
-  Image, 
-  Video, 
-  Wand2,
+  Palette, 
+  Settings, 
+  CheckCircle,
   Menu,
   X,
   Github,
-  Twitter,
-  Zap
-} from "lucide-react";
+  Twitter
+} from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { getCurrentProvider, setCurrentProvider, providers, type Provider } from "@/lib/providers";
 
@@ -34,9 +34,9 @@ export default function Header() {
   };
 
   const navItems = [
-    { icon: Image, label: "Text to Image", href: "#image" },
-    { icon: Video, label: "Text to Video", href: "#video" },
-    { icon: Wand2, label: "Upscale", href: "#upscale" },
+    { icon: Palette, label: "Text to Image", href: "#image" },
+    { icon: Settings, label: "Text to Video", href: "#video" },
+    { icon: CheckCircle, label: "Upscale", href: "#upscale" },
   ];
 
   return (

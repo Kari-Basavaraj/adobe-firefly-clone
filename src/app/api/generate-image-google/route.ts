@@ -7,9 +7,6 @@ export async function POST(request: NextRequest) {
       prompt,
       image_size = "square_hd",
       num_images = 1,
-      guidance_scale = 7.5,
-      num_inference_steps = 25,
-      enable_safety_checker = true,
       seed
     } = body;
 
@@ -29,16 +26,22 @@ export async function POST(request: NextRequest) {
 
     console.log("🎨 Generating image with Google Imagen:", prompt);
 
-    // Convert image_size to aspect ratio for Google Imagen
-    const aspectRatioMap: Record<string, string> = {
-      "square_hd": "1:1",
-      "portrait_4_3": "3:4", 
-      "portrait_16_9": "9:16",
-      "landscape_4_3": "4:3",
-      "landscape_16_9": "16:9"
+    // Map our image size options to Google Imagen's aspectRatio parameter  
+    const getGoogleAspectRatio = (size: string): string => {
+      const aspectRatios: Record<string, string> = {
+        "square_hd": "1:1",
+        "portrait_4_3": "3:4", 
+        "portrait_16_9": "9:16",
+        "landscape_4_3": "4:3",
+        "landscape_16_9": "16:9"
+      };
+      return aspectRatios[size] || "1:1";
     };
 
-    const aspectRatio = aspectRatioMap[image_size] || "1:1";
+    const aspectRatio = getGoogleAspectRatio(image_size);
+
+    // Google Imagen API endpoint
+    const apiUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/YOUR_PROJECT_ID/locations/us-central1/publishers/google/models/imagen-4.0-generate-preview-06-06:predict`;
 
     // Prepare the request payload for Google Imagen API
     const payload = {
@@ -51,95 +54,80 @@ export async function POST(request: NextRequest) {
         sampleCount: Math.min(Math.max(num_images, 1), 4), // Google Imagen supports 1-4 images
         aspectRatio: aspectRatio,
         // Add seed if provided (only when safety is disabled)
-        ...(seed && !enable_safety_checker && { seed: seed })
+        ...(seed && { seed: seed })
       }
     };
 
-    // Call Google Imagen API
-    const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-preview-06-06:predict",
-      {
-        method: 'POST',
-        headers: {
-          'x-goog-api-key': process.env.GOOGLE_API_KEY,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      }
-    );
+    console.log("🔍 Sending request to Google Imagen API...");
 
-    if (!response.ok) {
-      const errorData = await response.text();
-      console.error("❌ Google Imagen API error:", response.status, errorData);
-      
-      // Handle specific error cases
-      if (response.status === 401) {
-        return NextResponse.json(
-          { error: "Invalid Google API key. Please check your GOOGLE_API_KEY environment variable." },
-          { status: 401 }
-        );
-      } else if (response.status === 403) {
-        return NextResponse.json(
-          { error: "Access denied. Make sure your Google API key has access to Imagen API and you're on a paid plan." },
-          { status: 403 }
-        );
-      } else if (response.status === 429) {
-        return NextResponse.json(
-          { error: "Rate limit exceeded. Please try again later." },
-          { status: 429 }
-        );
-      } else {
-        return NextResponse.json(
-          { error: `Google Imagen API error: ${response.status}. ${errorData}` },
-          { status: response.status }
-        );
-      }
-    }
-
-    const result = await response.json();
-    console.log("🔍 Google Imagen response received");
-
-    // Process the response from Google Imagen
-    if (!result.predictions || !Array.isArray(result.predictions)) {
-      throw new Error("Invalid response format from Google Imagen API");
-    }
-
-    const processedImages = result.predictions.map((prediction: any, index: number) => {
-      if (!prediction.bytesBase64Encoded) {
-        throw new Error(`No image data found in prediction ${index}`);
-      }
-
-      // Convert base64 to data URL for consistency with other providers
-      const mimeType = prediction.mimeType || 'image/png';
-      const imageUrl = `data:${mimeType};base64,${prediction.bytesBase64Encoded}`;
-
-      return {
-        url: imageUrl,
-        width: aspectRatio === "1:1" ? 1024 : (aspectRatio.includes("16:9") ? (aspectRatio === "16:9" ? 1408 : 768) : 1024),
-        height: aspectRatio === "1:1" ? 1024 : (aspectRatio.includes("16:9") ? (aspectRatio === "16:9" ? 768 : 1408) : 1024),
-        content_type: mimeType,
-        file_name: `generated-image-google-${index}.png`,
-      };
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.GOOGLE_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
     });
 
-    const finalResult = {
-      images: processedImages,
-      prompt: prompt,
-      seed: seed || Math.floor(Math.random() * 1000000),
-      timings: { inference: 0 },
-      has_nsfw_concepts: [false], // Google handles safety automatically
-    };
+    const responseText = await response.text();
+    
+    if (!response.ok) {
+      console.error("❌ Google Imagen API error:", response.status, responseText);
+      
+      let errorData: Record<string, unknown>;
+      try {
+        errorData = JSON.parse(responseText);
+      } catch {
+        errorData = { message: responseText };
+      }
+      
+      return NextResponse.json(
+        { error: `Google Imagen API error: ${response.status} ${JSON.stringify(errorData)}` },
+        { status: response.status }
+      );
+    }
 
-    console.log("✅ Image generated successfully with Google Imagen");
-    return NextResponse.json(finalResult);
+    const result = JSON.parse(responseText);
+    
+    console.log("🔍 Google Imagen response received, processing...");
 
-  } catch (error) {
+    // Process the response to extract image URLs
+    const predictions = result.predictions || [];
+    const images = predictions.flatMap((prediction: Record<string, unknown>) => {
+      const bytesBase64Encoded = prediction.bytesBase64Encoded as string;
+      const mimeType = prediction.mimeType as string || 'image/jpeg';
+      
+      if (bytesBase64Encoded) {
+        return [{
+          url: `data:${mimeType};base64,${bytesBase64Encoded}`,
+          alt: prompt
+        }];
+      }
+      return [];
+    });
+
+    if (images.length === 0) {
+      throw new Error("No images found in Google Imagen response");
+    }
+
+    console.log("✅ Image generated successfully with", images.length, "image(s)");
+    
+    return NextResponse.json({
+      images: images,
+      metadata: {
+        model: "Imagen 4.0",
+        prompt: prompt,
+        provider: "google"
+      }
+    });
+
+  } catch (error: unknown) {
     console.error("❌ Error generating image with Google Imagen:", error);
+    
+    const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+    
     return NextResponse.json(
-      { 
-        error: error instanceof Error ? error.message : "Failed to generate image with Google Imagen",
-        details: "Server-side generation error"
-      },
+      { error: `Failed to generate image: ${errorMessage}` },
       { status: 500 }
     );
   }

@@ -9,13 +9,11 @@ import {
   Download, 
   Copy, 
   Wand2,
-  Sliders,
-  Palette,
   AlertCircle,
   Loader2
 } from "lucide-react";
 import { generateImage, getImageSizes } from "@/lib/providers";
-import { cn, downloadImage, copyToClipboard } from "@/lib/utils";
+import { downloadImage, copyToClipboard } from "@/lib/utils";
 
 export default function ImageGenerator() {
   const [prompt, setPrompt] = useState("");

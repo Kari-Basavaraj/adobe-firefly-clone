@@ -99,7 +99,13 @@ export default function ProviderStatus() {
             <div className="space-y-3">
               <div>
                 <h4 className="text-sm font-medium mb-1">Description</h4>
-                <p className="text-sm text-muted-foreground">{provider.description}</p>
+                <p className="text-sm text-gray-400">
+                  {provider.status === "available" 
+                    ? "Ready to use" 
+                    : provider.status === "requires_credits"
+                    ? "Requires credits"
+                    : "Can&apos;t be reached"}
+                </p>
               </div>
 
               <div>
@@ -137,7 +143,7 @@ export default function ProviderStatus() {
                     <span className="text-sm font-medium">Credits Required</span>
                   </div>
                   <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-1">
-                    This provider requires credits. Visit the provider's dashboard to add funds.
+                    This provider requires credits. Visit the provider&apos;s dashboard to add funds.
                   </p>
                 </div>
               )}

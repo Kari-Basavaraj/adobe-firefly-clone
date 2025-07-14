@@ -1,22 +1,21 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Video, 
-  Play, 
+  Sparkles, 
+  Settings, 
   Download, 
   Copy, 
-  Sparkles, 
-  Settings,
-  Loader2,
-  Upload,
-  FileImage,
+  Wand2,
   Clock,
-  AlertCircle
-} from "lucide-react";
+  Play,
+  AlertCircle,
+  Loader2
+} from 'lucide-react';
 import { generateVideo, getVideoLengths } from "@/lib/providers";
-import { cn, downloadImage, copyToClipboard } from "@/lib/utils";
+import { downloadImage, copyToClipboard } from "@/lib/utils";
 
 export default function VideoGenerator() {
   const [prompt, setPrompt] = useState("");
@@ -32,7 +31,7 @@ export default function VideoGenerator() {
     num_inference_steps: 25,
   });
 
-  const videoLengths = getVideoLengths();
+      // const videoLengths = getVideoLengths(); // Unused for now
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -45,7 +44,7 @@ export default function VideoGenerator() {
     }
   };
 
-  const handleGenerate = useCallback(async () => {
+  const handleGenerate = async () => {
     if (!prompt.trim() || isGenerating) return;
 
     setIsGenerating(true);
@@ -67,7 +66,7 @@ export default function VideoGenerator() {
     } finally {
       setIsGenerating(false);
     }
-  }, [prompt, sourceImage, settings, isGenerating]);
+  };
 
   const handleDownload = (videoUrl: string, prompt: string) => {
     const filename = `firefly-video-${prompt.slice(0, 30).replace(/[^a-zA-Z0-9]/g, '_')}.mp4`;
@@ -130,7 +129,7 @@ export default function VideoGenerator() {
             ) : (
               <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-border rounded-lg cursor-pointer hover:bg-accent/50 transition-colors">
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                  <Upload className="w-10 h-10 mb-3 text-muted-foreground" />
+                  <Wand2 className="w-10 h-10 mb-3 text-muted-foreground" />
                   <p className="mb-2 text-sm text-muted-foreground">
                     <span className="font-semibold">Click to upload</span> or drag and drop
                   </p>
