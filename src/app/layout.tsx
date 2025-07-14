@@ -18,6 +18,11 @@ export const metadata: Metadata = {
   description: "Create stunning images and videos from text using advanced AI. Transform your ideas into visual masterpieces with our cutting-edge text-to-image and video generation platform.",
   keywords: ["AI", "text to image", "video generation", "artificial intelligence", "creative tools"],
   authors: [{ name: "Firefly AI" }],
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: '32x32', type: 'image/x-icon' },
+    ],
+  },
   openGraph: {
     title: "Firefly AI - Text to Image & Video Generation",
     description: "Create stunning images and videos from text using advanced AI",
