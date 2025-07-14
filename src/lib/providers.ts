@@ -197,4 +197,4 @@ export function getImageSizes() {
 export function getVideoLengths() {
   const api = getProviderApi();
   return api.getVideoLengths();
-} 
+}
