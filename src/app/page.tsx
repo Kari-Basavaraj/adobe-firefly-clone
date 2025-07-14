@@ -1,102 +1,227 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Image, Video, Wand2, Sparkles, ArrowRight, Star } from "lucide-react";
+import Header from "@/components/Header";
+import ImageGenerator from "@/components/ImageGenerator";
+import VideoGenerator from "@/components/VideoGenerator";
+import ProviderStatus from "@/components/ProviderStatus";
+import { cn } from "@/lib/utils";
+
+type Tab = "image" | "video";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [activeTab, setActiveTab] = useState<Tab>("image");
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const tabs = [
+    {
+      id: "image" as Tab,
+      label: "Text to Image",
+      icon: Image,
+      description: "Generate stunning images from text",
+    },
+    {
+      id: "video" as Tab,
+      label: "Text to Video",
+      icon: Video,
+      description: "Create dynamic videos from descriptions",
+    },
+  ];
+
+  const features = [
+    {
+      icon: Wand2,
+      title: "AI-Powered Generation",
+      description: "State-of-the-art models for exceptional quality",
+    },
+    {
+      icon: Sparkles,
+      title: "Creative Control",
+      description: "Fine-tune every aspect of your generations",
+    },
+    {
+      icon: Star,
+      title: "Professional Quality",
+      description: "High-resolution outputs ready for any use",
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-background/50">
+      <Header />
+      
+      <main className="container mx-auto px-4 py-8">
+        {/* Hero Section */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center space-y-8 mb-12"
+        >
+          <div className="space-y-4">
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="text-4xl md:text-6xl font-bold gradient-text"
+            >
+              Create with AI
+            </motion.h1>
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-xl text-muted-foreground max-w-3xl mx-auto"
+            >
+              Transform your imagination into reality with cutting-edge AI technology. 
+              Generate stunning images and videos from simple text descriptions.
+            </motion.p>
+          </div>
+
+          {/* Features */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            {features.map((feature, index) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 + index * 0.1 }}
+                className="flex flex-col items-center space-y-3 p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300"
+              >
+                <div className="p-3 rounded-full bg-primary/10">
+                  <feature.icon className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-semibold">{feature.title}</h3>
+                <p className="text-sm text-muted-foreground text-center">
+                  {feature.description}
+                </p>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Provider Status */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+            className="max-w-2xl mx-auto"
           >
-            Read our docs
-          </a>
-        </div>
+            <ProviderStatus />
+          </motion.div>
+        </motion.section>
+
+        {/* Tab Navigation */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="flex justify-center mb-8"
+        >
+          <div className="flex space-x-1 p-1 bg-muted rounded-2xl">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={cn(
+                  "flex items-center space-x-2 px-6 py-3 rounded-xl font-medium transition-all duration-200",
+                  activeTab === tab.id
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <tab.icon className="h-5 w-5" />
+                <span>{tab.label}</span>
+              </button>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Tab Content */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.3 }}
+            className="w-full"
+          >
+            {activeTab === "image" && <ImageGenerator />}
+            {activeTab === "video" && <VideoGenerator />}
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Getting Started */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          className="mt-20 text-center space-y-8"
+        >
+          <div className="space-y-4">
+            <h2 className="text-3xl font-bold">Getting Started</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Ready to unleash your creativity? Follow these simple steps to start generating amazing content.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            {[
+              {
+                step: "1",
+                title: "Choose Your Mode",
+                description: "Select between image or video generation based on your needs",
+              },
+              {
+                step: "2",
+                title: "Describe Your Vision",
+                description: "Write a detailed prompt describing what you want to create",
+              },
+              {
+                step: "3",
+                title: "Generate & Download",
+                description: "Click generate and download your AI-created masterpiece",
+              },
+            ].map((step, index) => (
+              <motion.div
+                key={step.step}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9 + index * 0.1 }}
+                className="relative"
+              >
+                <div className="flex flex-col items-center space-y-4 p-6">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <span className="text-lg font-bold text-primary">{step.step}</span>
+                  </div>
+                  <h3 className="font-semibold">{step.title}</h3>
+                  <p className="text-sm text-muted-foreground text-center">
+                    {step.description}
+                  </p>
+                </div>
+                {index < 2 && (
+                  <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2">
+                    <ArrowRight className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </div>
+        </motion.section>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+      {/* Footer */}
+      <footer className="mt-20 border-t border-border/50 py-8">
+        <div className="container mx-auto px-4 text-center">
+          <p className="text-muted-foreground text-sm">
+            © 2024 Firefly AI. Powered by cutting-edge artificial intelligence.
+          </p>
+        </div>
       </footer>
     </div>
   );
